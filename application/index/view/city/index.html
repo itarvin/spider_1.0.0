@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>欢迎页面-X-admin2.0</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    {load href="__STATIC__/layui/css/font.css" /}
+    {load href="__STATIC__/layui/css/xadmin.css" /}
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    {load href="__STATIC__/layui/lib/layui/layui.js" /}
+    {load href="__STATIC__/layui/js/xadmin.js" /}
+</head>
+<body>
+<div class="x-body">
+    <div>
+        <span class="layui-btn layui-btn-normal layui-btn-mini" onclick="moveNotes(this)">一键转移所有数据至新数据库</span>
+        <span class="layui-btn layui-btn-normal layui-btn-mini" onclick="moveTwo(this)">二级一键转移所有数据至新数据库</span>
+    </div>
+</div>
+<script>
+    function moveNotes(obj){
+        var data = {
+            init : 'init'
+        };
+        $.ajax({
+			url:"{:url('index/getlinks')}",
+			type:'post',
+			dataType:'json',
+			data: data,
+			success:function(msg){
+                if(msg.code == 1){
+                    loopDeal(msg.count,'0',msg.count,'start');
+                    var type = 'auto';
+                        var text = '统计笔记共'+msg.count+'条';
+                        layer.open({
+                            type: 1
+                            ,offset: type
+                            ,id: 'layerDemo'+type
+                            ,content: '<div style="padding: 20px 100px;">'+ text +'</div>'
+                            ,btn: ['确定']
+                            // ,area: ['600px', '357px'] //宽高
+                            ,btnAlign: 'c'
+                            ,shade: 0
+                            ,yes: function(){
+                                layer.closeAll();
+                            }
+                        });
+                        var title = $('.layui-layer-title');
+                        $('.layui-layer-btn a.layui-layer-btn0').hide();
+                        title.html('<span style="color:red;">数据正在执行，请勿关闭！</span>');
+                        $('.layui-layer-setwin').hide();
+                }
+			},
+		});
+    }
+    // 循环执行函数
+    function loopDeal(count,processed,surplus,sign){
+        var data = {
+            count : count,
+            processed  : processed,
+            surplus : surplus,
+            init  : sign
+        };
+        $.ajax({
+			url:"{:url('index/getlinks')}",
+			type:'post',
+			dataType:'json',
+			data: data,
+			success:function(msg){
+                if(msg.code == 1){
+                    if(msg.processed < msg.count){
+                        loopDeal(msg.count,msg.processed,msg.surplus,msg.init);
+                        var i = $('#layerDemoauto');
+                        i.html('共需导入<span style="color:yellow;font-size:35px;">'+msg.count+'</span>条!已成功导入<span style="color:green;font-size:35px;">'+msg.processed+'</span>条!还有<span style="color:#3047de;font-size:35px;">'+msg.surplus+'</span>次导入完成！');
+                        $('.layui-layer-setwin').hide();
+                    }else{
+                        $('.layui-layer-btn a.layui-layer-btn0').show();
+                        var i = $('#layerDemoauto');
+                        i.html('共需导入<span style="color:yellow;font-size:35px;">'+msg.count+'</span>条!已成功导入<span style="color:green;font-size:35px;">'+msg.processed+'</span>条!还有<span style="color:#3047de;font-size:35px;">'+msg.surplus+'</span>次导入完成！');
+                        $('.layui-layer-setwin').hide();
+                        title.html('<span style="color:green;">数据导入结束！</span>');
+                    }
+                }
+			},
+		});
+    }
+    function moveTwo(obj){
+        var data = {
+            init : 'init'
+        };
+        $.ajax({
+			url:"{:url('index/twolinks')}",
+			type:'post',
+			dataType:'json',
+			data: data,
+			success:function(msg){
+                if(msg.code == 1){
+                    loopTwoDeal(msg.count,'0',msg.count,'start');
+                    var type = 'auto';
+                        var text = '统计笔记共'+msg.count+'条';
+                        layer.open({
+                            type: 1
+                            ,offset: type
+                            ,id: 'layerDemo'+type
+                            ,content: '<div style="padding: 20px 100px;">'+ text +'</div>'
+                            ,btn: ['确定']
+                            // ,area: ['600px', '357px'] //宽高
+                            ,btnAlign: 'c'
+                            ,shade: 0
+                            ,yes: function(){
+                                layer.closeAll();
+                            }
+                        });
+                        var title = $('.layui-layer-title');
+                        $('.layui-layer-btn a.layui-layer-btn0').hide();
+                        title.html('<span style="color:red;">数据正在执行，请勿关闭！</span>');
+                        $('.layui-layer-setwin').hide();
+                }
+			},
+		});
+    }
+    // 循环执行函数
+    function loopTwoDeal(count,processed,surplus,sign){
+        var data = {
+            count : count,
+            processed  : processed,
+            surplus : surplus,
+            init  : sign
+        };
+        $.ajax({
+			url:"{:url('index/twolinks')}",
+			type:'post',
+			dataType:'json',
+			data: data,
+			success:function(msg){
+                if(msg.code == 1){
+                    if(msg.processed < msg.count){
+                        loopTwoDeal(msg.count,msg.processed,msg.surplus,msg.init);
+                        var i = $('#layerDemoauto');
+                        i.html('共需导入<span style="color:yellow;font-size:35px;">'+msg.count+'</span>条!已成功导入<span style="color:green;font-size:35px;">'+msg.processed+'</span>条!还有<span style="color:#3047de;font-size:35px;">'+msg.surplus+'</span>次导入完成！');
+                        $('.layui-layer-setwin').hide();
+                    }else{
+                        $('.layui-layer-btn a.layui-layer-btn0').show();
+                        var i = $('#layerDemoauto');
+                        i.html('共需导入<span style="color:yellow;font-size:35px;">'+msg.count+'</span>条!已成功导入<span style="color:green;font-size:35px;">'+msg.processed+'</span>条!还有<span style="color:#3047de;font-size:35px;">'+msg.surplus+'</span>次导入完成！');
+                        $('.layui-layer-setwin').hide();
+                        title.html('<span style="color:green;">数据导入结束！</span>');
+                    }
+                }
+			},
+		});
+    }
+</script>
+</body>
+</html>
